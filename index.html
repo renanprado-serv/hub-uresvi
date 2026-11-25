@@ -1,520 +1,184 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal URE São Vicente</title>
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            /* Fundo gradiente super suave, inspirado na referência */
-            background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f0fdf4 100%);
-            background-attachment: fixed;
-        }
-
-        /* Ocultar barra de rolagem horizontal da navegação */
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Scrollbar customizada global */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plano de Evidências Escolar — URE São Vicente</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
-<body class="min-h-screen text-slate-800 antialiased p-4 md:p-6 lg:p-8">
+<body>
+  <!-- Fundo luminoso estilo Liquid Glass -->
+  <div class="ambient-bg"></div>
 
-    <div id="login-view" class="fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-500" style="background: inherit;">
-        <div class="bg-white/70 backdrop-blur-2xl border border-white/60 shadow-2xl rounded-3xl p-8 w-full max-w-md relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 h-48 bg-blue-400/20 rounded-full blur-3xl -z-10"></div>
-            <div class="absolute bottom-0 left-0 w-32 h-32 bg-purple-400/20 rounded-full blur-3xl -z-10"></div>
-            
-            <div class="text-center mb-8">
-                <!-- Logotipo URE - Tela de Login -->
-                <div class="relative w-24 h-24 mx-auto mb-4 flex-shrink-0">
-                    <img src="logo-ure.png" alt="Logo URE São Vicente" class="w-full h-full object-cover rounded-full shadow-lg border-2 border-white/60" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-24 h-24 bg-blue-600 rounded-full flex items-center justify-center mx-auto shadow-lg shadow-blue-600/30 text-white font-bold text-2xl\'>URE</div>';">
-                </div>
-                <h2 class="text-2xl font-bold text-slate-800">HUB URE SVI</h2>
-                <p class="text-sm text-slate-500 mt-1">Unidade Regional de Ensino de São Vicente</p>
-            </div>
-
-            <form id="login-form" class="space-y-5" onsubmit="realizarLogin(event)">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Setor</label>
-                    <div class="relative">
-                        <select id="setor-select" required class="w-full bg-white/50 border border-slate-200 rounded-xl pl-4 pr-10 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all appearance-none cursor-pointer">
-                            <option value="" disabled selected>Selecione seu setor...</option>
-                            <option value="Assessoria do Gabinete">Assessoria do Gabinete</option>
-                            <option value="Dirigente">Dirigente</option>
-                            <option value="EEC">EEC</option>
-                            <option value="ESE">ESE</option>
-                            <option value="SEAFIN">SEAFIN</option>
-                            <option value="SEGRE">SEGRE</option>
-                            <option value="SEINTEC">SEINTEC</option>
-                            <option value="SEOM">SEOM</option>
-                            <option value="SEPES">SEPES</option>
-                        </select>
-                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">Senha</label>
-                    <input type="password" id="senha-input" required placeholder="Digite a senha (ex: 1234)" class="w-full bg-white/50 border border-slate-200 rounded-xl px-4 py-3 text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all">
-                </div>
-
-                <p id="login-error" class="text-red-500 text-sm font-medium hidden text-center bg-red-50 rounded-lg py-2">Senha incorreta. Tente novamente.</p>
-
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md shadow-blue-600/20 transition-colors flex items-center justify-center gap-2">
-                    Entrar <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </button>
-            </form>
+  <!-- TELA DE LOGIN -->
+  <section id="login-view" class="login-wrapper">
+    <div class="glass-card login-card">
+      <div class="brand-header-vertical">
+        <div class="sp-badge">SP</div>
+        <div>
+          <p class="eyebrow">GOVERNO DO ESTADO DE SÃO PAULO • SEDUC</p>
+          <h1>URE São Vicente</h1>
+          <p class="subtitle">Sistema de Consolidação — Plano de Evidências Escolar</p>
         </div>
+      </div>
+
+      <form id="login-form" class="form-stack">
+        <div class="input-group">
+          <label for="login-email">E-mail Institucional</label>
+          <input type="email" id="login-email" placeholder="nome@educacao.sp.gov.br" required />
+        </div>
+        <div class="input-group">
+          <label for="login-senha">Senha / PIN</label>
+          <input type="password" id="login-senha" placeholder="••••••••" required />
+        </div>
+        <button type="submit" class="btn-primary-glass" id="btn-login">Entrar no Sistema</button>
+        <p id="login-error" class="error-msg hidden"></p>
+      </form>
     </div>
+  </section>
 
-    <div id="dashboard-view" class="hidden max-w-[1400px] mx-auto space-y-4 transition-opacity duration-500 opacity-0">
+  <!-- APLICAÇÃO PRINCIPAL -->
+  <div id="app-view" class="app-shell hidden">
+    <!-- Cabeçalho Flutuante Liquid Glass -->
+    <header class="glass-header">
+      <div class="header-left">
+        <div class="sp-badge small">SP</div>
+        <div>
+          <span class="eyebrow">SECRETARIA DE ESTADO DA EDUCAÇÃO</span>
+          <h2 class="header-title">Unidade Regional de Ensino de São Vicente</h2>
+        </div>
+      </div>
 
-        <!-- 1. Header Principal com Logo URE -->
-        <header class="bg-white/70 backdrop-blur-xl border border-white/60 shadow-sm rounded-full p-2.5 px-6 flex flex-col md:flex-row items-center justify-between gap-4 transition-all">
-            <!-- Esquerda: Logo e Título -->
-            <div class="flex items-center gap-4">
-                <!-- Logotipo URE - Cabeçalho (Pequeno) -->
-                <div class="relative w-12 h-12 flex-shrink-0">
-                    <img src="logo-ure.png" alt="Logo URE São Vicente" class="w-full h-full object-cover rounded-full shadow-md border border-white/60" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/20 text-white font-bold text-sm\'>URE</div>';">
-                </div>
-                <div>
-                    <h1 class="text-base font-bold text-slate-900 leading-tight">HUB URE</h1>
-                    <p class="text-xs text-slate-500 font-medium">São Vicente</p>
-                </div>
-            </div>
+      <div class="header-right">
+        <select id="select-semestre" class="glass-pill-select" title="Selecionar Semestre"></select>
+        <button id="btn-consolidar" class="btn-accent-glass hidden">Consolidar Semestre</button>
+        <div class="user-pill">
+          <span id="user-nome">Usuário</span>
+          <small id="user-perfil">PERFIL</small>
+        </div>
+        <button id="btn-logout" class="btn-ghost-glass">Sair</button>
+      </div>
+    </header>
 
-            <!-- Direita: Saudação e Ações -->
-            <div class="flex items-center gap-3">
-                <div class="hidden md:block text-right mr-3">
-                    <p id="user-greeting" class="text-sm font-semibold text-slate-700">Olá, Visitante</p>
-                </div>
-                
-                <button onclick="realizarLogout()" class="flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-slate-600 hover:text-red-600 rounded-full text-xs font-semibold transition-colors">
-                    Sair
-                    <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-                </button>
-            </div>
-        </header>
+    <!-- VISÃO DASHBOARD (Dirigente, Supervisor e PEC) -->
+    <main id="dashboard-view" class="container hidden">
+      <div class="section-head">
+        <div>
+          <h1 id="dash-titulo">Painel de Acompanhamento</h1>
+          <p id="dash-subtitulo" class="subtitle">Consolidação semestral das unidades escolares</p>
+        </div>
+        <span id="badge-status-semestre" class="glass-pill-badge">Semestre Aberto</span>
+      </div>
 
-        <!-- Barra de Navegação Interna (Estilo Hub EEC) -->
-        <nav class="bg-slate-200/40 backdrop-blur-md shadow-inner rounded-full p-1.5 flex overflow-x-auto hide-scrollbar gap-1 items-center justify-start max-w-fit mx-auto md:mx-0">
-            <button class="bg-white text-slate-800 shadow-sm rounded-full px-5 py-2 text-sm font-semibold flex items-center gap-2 whitespace-nowrap">
-                <i data-lucide="layout-grid" class="w-4 h-4"></i> Início
-            </button>
-            <a href="https://docs.google.com/presentation/d/1UVLXPQrTLs4Jw433CcUK8CK-YwX74WL2dVVGubnI7_E/preview?pru=AAABmsCGL7Q*0Jui0cv-UA1PfohZG2l7Gg&slide=id.p" target="_blank" rel="noopener noreferrer" class="text-slate-500 hover:bg-white/60 hover:text-slate-800 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap">
-                <i data-lucide="bar-chart-2" class="w-4 h-4"></i> Calendário Pedagógico
-            </a>
-            <a href="https://docs.google.com/spreadsheets/d/1AteeY3WZMm5lAqbEsNfF4KH8RgHmm-B6GEteM7uXbnM/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer" class="text-slate-500 hover:bg-white/60 hover:text-slate-800 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap">
-                <i data-lucide="calendar-days" class="w-4 h-4"></i> Minha Agenda
-            </a>
-            <button class="text-slate-500 hover:bg-white/60 hover:text-slate-800 rounded-full px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap">
-                <i data-lucide="building-2" class="w-4 h-4"></i> Escolas
-            </button>
-        </nav>
+      <!-- KPIs (EXCLUSIVO DIRIGENTE) -->
+      <div id="kpi-grid" class="kpi-grid hidden">
+        <div class="glass-card kpi-card">
+          <span class="kpi-label">Total de Escolas</span>
+          <strong id="kpi-total" class="kpi-value">0</strong>
+        </div>
+        <div class="glass-card kpi-card kpi-green">
+          <span class="kpi-label">Regular (90–100%)</span>
+          <strong id="kpi-regular" class="kpi-value">0</strong>
+        </div>
+        <div class="glass-card kpi-card kpi-amber">
+          <span class="kpi-label">Atenção (70–89%)</span>
+          <strong id="kpi-atencao" class="kpi-value">0</strong>
+        </div>
+        <div class="glass-card kpi-card kpi-red">
+          <span class="kpi-label">Crítico (< 70%)</span>
+          <strong id="kpi-critico" class="kpi-value">0</strong>
+        </div>
+      </div>
 
-        <!-- 3. Card Unidade Regional de Ensino -->
-        <section class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 md:p-8 mt-4 relative overflow-hidden group">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-400/10 rounded-full blur-3xl -z-10 group-hover:bg-blue-400/20 transition-colors duration-700"></div>
-            
-            <div class="flex flex-col md:flex-row gap-8 items-start md:items-center justify-between">
-                <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="bg-blue-50 p-2 rounded-xl border border-blue-100">
-                            <i data-lucide="star" class="w-6 h-6 text-blue-600"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Unidade Regional de Ensino</h2>
-                    </div>
-                    <p class="text-slate-500 text-sm max-w-xl">Acesso restrito aos painéis executivos, agenda estratégica e relatórios gerenciais da Diretoria.</p>
-                </div>
+      <!-- Filtros Flutuantes -->
+      <div class="glass-card filter-bar">
+        <input type="text" id="filtro-busca" class="glass-input" placeholder="Buscar por escola ou CIE..." />
+        <select id="filtro-municipio" class="glass-select">
+          <option value="">Todos os Municípios</option>
+        </select>
+        <select id="filtro-supervisor" class="glass-select">
+          <option value="">Todos os Supervisores</option>
+        </select>
+        <select id="filtro-semaforo" class="glass-select hidden">
+          <option value="">Todos os Semáforos</option>
+          <option value="Regular">Regular</option>
+          <option value="Atenção">Atenção</option>
+          <option value="Crítico">Crítico</option>
+        </select>
+      </div>
 
-                <div class="flex flex-wrap gap-3 w-full md:w-auto">
-                    <a href="#" class="flex-1 md:flex-none flex items-center justify-between gap-3 px-5 py-3.5 bg-white hover:bg-blue-50 border border-slate-100 rounded-2xl shadow-sm transition-all group/btn">
-                        <span class="text-sm font-bold text-slate-700 group-hover/btn:text-blue-700">Relatório Mensal</span>
-                        <div class="bg-slate-50 group-hover/btn:bg-blue-100 p-1.5 rounded-lg transition-colors">
-                            <i data-lucide="calendar" class="w-4 h-4 text-slate-400 group-hover/btn:text-blue-600"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex-1 md:flex-none flex items-center justify-between gap-3 px-5 py-3.5 bg-white hover:bg-blue-50 border border-slate-100 rounded-2xl shadow-sm transition-all group/btn">
-                        <span class="text-sm font-bold text-slate-700 group-hover/btn:text-blue-700">Plano de Ação</span>
-                        <div class="bg-slate-50 group-hover/btn:bg-blue-100 p-1.5 rounded-lg transition-colors">
-                            <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400 group-hover/btn:text-blue-600"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </section>
+      <!-- Tabela de Escolas -->
+      <div class="glass-card table-wrapper">
+        <table class="glass-table">
+          <thead>
+            <tr>
+              <th>CIE</th>
+              <th>Unidade Escolar</th>
+              <th>Município</th>
+              <th>Supervisor</th>
+              <th>Validação</th>
+              <th class="col-dirigente hidden">Preench.</th>
+              <th class="col-dirigente hidden">Semáforo</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-escolas-body"></tbody>
+        </table>
+      </div>
+    </main>
 
-        <!-- 4. Grade de Setores (Ordem Alfabética Rigorosa) -->
-        <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mt-4">
-            
-            <!-- A: Assessoria do Gabinete -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="users" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">Assessoria do Gabinete</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="https://seesp-my.sharepoint.com/:f:/g/personal/svi_eec_educacao_sp_gov_br/IgDgnYcxlgzhQrOU5IRXgYuWASfqg5H-A2TqiZSoiVgJ9o8?e=rGKSdx" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-indigo-600 transition-colors">Assessoria Jurídica</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Pareceres e Consultas</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-indigo-50 text-slate-400 group-hover/link:text-indigo-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-indigo-600 transition-colors">Comunicação</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Imprensa e Mídia</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-indigo-50 text-slate-400 group-hover/link:text-indigo-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+    <!-- VISÃO FORMULÁRIO DA ESCOLA -->
+    <main id="escola-view" class="container hidden">
+      <div class="glass-card escola-topbar">
+        <div class="escola-info">
+          <button id="btn-voltar-dash" class="btn-ghost-glass hidden">← Voltar ao Painel</button>
+          <div>
+            <h1 id="form-escola-nome">Nome da Escola</h1>
+            <p id="form-escola-meta" class="subtitle">CIE: — | Município: —</p>
+          </div>
+        </div>
+        <div class="escola-actions">
+          <button id="btn-imprimir-escola" class="btn-ghost-glass hidden">Imprimir PDF</button>
+          <button id="btn-salvar-escola" class="btn-primary-glass">Salvar Alterações</button>
+        </div>
+      </div>
 
-            <!-- E: EEC -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-blue-100 flex items-center justify-center text-blue-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="book-open" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">EEC</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="https://seesp-my.sharepoint.com/:f:/g/personal/svi_eec_educacao_sp_gov_br/IgAlTso2Z1NWTJFWjxLE9J_aAXh-jhRP3hmWJxoqpjW6LvU?e=993yJT" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-blue-600 transition-colors">Equipe Curricular</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Projetos e Planos</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-blue-50 text-slate-400 group-hover/link:text-blue-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-blue-600 transition-colors">Materiais de Apoio</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Repositório Geral</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-blue-50 text-slate-400 group-hover/link:text-blue-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+      <div id="aviso-consolidado" class="alert-glass hidden">
+        Este semestre foi consolidado pela Dirigente. Os campos estão em modo somente leitura.
+      </div>
 
-            <!-- E: ESE -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="search" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">ESE</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="https://seesp-my.sharepoint.com/:f:/g/personal/svi_eec_educacao_sp_gov_br/IgCHuocepTGlQ5BBJ86qfHBHARHUmUkFOcD8Shmp5JTPFuY?e=2Ooqll" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-purple-600 transition-colors">Supervisão Escolar</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Relatórios de Visita</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-purple-50 text-slate-400 group-hover/link:text-purple-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-purple-600 transition-colors">Homologações</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Sistemas e Validações</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-purple-50 text-slate-400 group-hover/link:text-purple-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+      <!-- Abas por Área (Matriz RACI) -->
+      <nav class="tabs-pill-bar" id="form-tabs">
+        <button class="tab-btn active" data-tab="tab-eixo1">1. Identificação & RH</button>
+        <button class="tab-btn" data-tab="tab-pedagogico">2. Pedagógico & Avaliações</button>
+        <button class="tab-btn" data-tab="tab-clima">3. Gestão Democrática & Clima</button>
+        <button class="tab-btn" data-tab="tab-adm">4. Adm, Finanças & Merenda</button>
+        <button class="tab-btn" data-tab="tab-links">5. Evidências (Drive)</button>
+        <button class="tab-btn" data-tab="tab-regional">6. Gestão Regional (PEC/Sup.)</button>
+      </nav>
 
-            <!-- S: SEAFIN -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="dollar-sign" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">SEAFIN</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-emerald-600 transition-colors">Administração e Finanças</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Gestão de Recursos</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-emerald-50 text-slate-400 group-hover/link:text-emerald-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-emerald-600 transition-colors">Licitações</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Compras e Contratos</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-emerald-50 text-slate-400 group-hover/link:text-emerald-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+      <!-- Conteúdo das Abas (Renderizado dinamicamente pelo app.js) -->
+      <div id="form-content-container" class="form-sections"></div>
+    </main>
+  </div>
 
-            <!-- S: SEGRE -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-orange-100 flex items-center justify-center text-orange-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="graduation-cap" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">SEGRE</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-orange-600 transition-colors">Vida Escolar</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Gestão de Alunos</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-orange-50 text-slate-400 group-hover/link:text-orange-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-orange-600 transition-colors">Censo e Estatísticas</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Informações Educacionais</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-orange-50 text-slate-400 group-hover/link:text-orange-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
+  <!-- Toast de Feedback -->
+  <div id="toast" class="toast hidden"></div>
 
-            <!-- S: SEINTEC -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-slate-200 flex items-center justify-center text-slate-700 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="cpu" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">SEINTEC</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-slate-800 transition-colors">Chamados GLPI</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Suporte Técnico</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-slate-200 text-slate-400 group-hover/link:text-slate-700 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-slate-800 transition-colors">Infraestrutura</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Redes e Sistemas</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-slate-200 text-slate-400 group-hover/link:text-slate-700 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- S: SEOM -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="hard-hat" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">SEOM</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-amber-600 transition-colors">Obras Escolares</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Acompanhamento</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-amber-50 text-slate-400 group-hover/link:text-amber-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-amber-600 transition-colors">Manutenção</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Solicitação de Reparos</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-amber-50 text-slate-400 group-hover/link:text-amber-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- S: SEPES -->
-            <div class="bg-white/60 backdrop-blur-xl border border-white/50 shadow-sm rounded-3xl p-6 flex flex-col h-full hover:bg-white/80 hover:shadow-md transition-all duration-300 group/card">
-                <div class="flex items-center gap-3 mb-5">
-                    <div class="w-10 h-10 rounded-2xl bg-pink-100 flex items-center justify-center text-pink-600 shadow-inner group-hover/card:scale-110 transition-transform">
-                        <i data-lucide="user-check" class="w-5 h-5"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 tracking-tight">SEPES</h3>
-                </div>
-                
-                <div class="space-y-2 flex-grow">
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-pink-600 transition-colors">Gestão de Pessoal</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Frequência e Pagamento</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-pink-50 text-slate-400 group-hover/link:text-pink-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                    <a href="#" class="flex items-center justify-between p-3 rounded-2xl hover:bg-white border border-transparent hover:border-slate-100 hover:shadow-sm transition-all group/link">
-                        <div>
-                            <p class="text-sm font-semibold text-slate-700 group-hover/link:text-pink-600 transition-colors">Afastamentos</p>
-                            <p class="text-xs text-slate-400 mt-0.5">Férias e Licenças</p>
-                        </div>
-                        <div class="w-8 h-8 flex items-center justify-center bg-slate-50 group-hover/link:bg-pink-50 text-slate-400 group-hover/link:text-pink-600 rounded-xl transition-colors">
-                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-        </main>
-        
-        <footer class="py-8 text-center text-sm text-slate-400 font-medium">
-            <p>&copy; 2026 URE São Vicente. Todos os direitos reservados.</p>
-        </footer>
-
+  <!-- Loading Overlay -->
+  <div id="loader" class="loader-overlay hidden">
+    <div class="glass-card loader-box">
+      <div class="spinner"></div>
+      <span id="loader-text">Carregando...</span>
     </div>
+  </div>
 
-    <script>
-        // Inicializa os ícones Lucide
-        lucide.createIcons();
+  <!-- ÁREA OCULTA PARA IMPRESSÃO DO RELATÓRIO DIAGNÓSTICO (PDF DIRIGENTE) -->
+  <section id="print-area" class="print-only"></section>
 
-        // Dicionário de senhas simulado (Mude aqui se desejar senhas diferentes para cada setor)
-        const senhasPorSetor = {
-            "Assessoria do Gabinete": "1234",
-            "Dirigente": "1234",
-            "EEC": "1234",
-            "ESE": "1234",
-            "SEAFIN": "1234",
-            "SEGRE": "1234",
-            "SEINTEC": "1234",
-            "SEOM": "1234",
-            "SEPES": "1234"
-        };
-
-        function verificarSessao() {
-            // Verifica se o usuário já fez login nesta sessão
-            const setorLogado = sessionStorage.getItem('setorLogado');
-            if (setorLogado) {
-                mostrarDashboard(setorLogado);
-            } else {
-                mostrarLogin();
-            }
-        }
-
-        function realizarLogin(event) {
-            event.preventDefault();
-            const setor = document.getElementById('setor-select').value;
-            const senha = document.getElementById('senha-input').value;
-            const errorMsg = document.getElementById('login-error');
-
-            // Verifica se a senha corresponde ao setor selecionado
-            if (senhasPorSetor[setor] && senhasPorSetor[setor] === senha) {
-                errorMsg.classList.add('hidden');
-                sessionStorage.setItem('setorLogado', setor); // Salva na sessão
-                mostrarDashboard(setor);
-            } else {
-                errorMsg.classList.remove('hidden');
-            }
-        }
-
-        function realizarLogout() {
-            sessionStorage.removeItem('setorLogado');
-            mostrarLogin();
-        }
-
-        function mostrarDashboard(setor) {
-            // Oculta a tela de login
-            document.getElementById('login-view').style.display = 'none';
-            
-            // Exibe o dashboard e aplica a animação
-            const dashboard = document.getElementById('dashboard-view');
-            dashboard.classList.remove('hidden');
-            
-            setTimeout(() => {
-                dashboard.classList.remove('opacity-0');
-            }, 50);
-
-            // Atualiza a saudação no cabeçalho
-            document.getElementById('user-greeting').textContent = `Olá, ${setor}`;
-            
-            // Limpa o campo de senha por segurança
-            document.getElementById('senha-input').value = ''; 
-        }
-
-        function mostrarLogin() {
-            // Oculta o dashboard
-            const dashboard = document.getElementById('dashboard-view');
-            dashboard.classList.add('hidden');
-            dashboard.classList.add('opacity-0');
-
-            // Exibe a tela de login
-            document.getElementById('login-view').style.display = 'flex';
-            document.getElementById('setor-select').value = '';
-        }
-
-        // Executa a verificação ao terminar de carregar a página
-        window.onload = verificarSessao;
-    </script>
+  <script src="app.js"></script>
 </body>
 </html>
