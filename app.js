@@ -1,7 +1,7 @@
 // =========================================================================
 // CONFIGURAÇÃO DA API (GOOGLE APPS SCRIPT)
 // =========================================================================
-const API_URL = 'COLE_AQUI_SUA_URL_DO_APPS_SCRIPT';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwomfcB0um2GkgZ9qVkVjuOkyWSHQfBwad2HSQC6agFeym9QAxhc7cftnLLvIsmtYu7/exec';
 
 // Estado global da aplicação
 const state = {
