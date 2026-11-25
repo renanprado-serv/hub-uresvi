@@ -357,7 +357,61 @@ async function carregarDashboard() {
   }
 
   popularFiltrosDashboard();
-  renderTabelaEscolas();
+  function renderTabelaEscolas() {
+  const busca = document.getElementById('filtro-busca').value.toLowerCase();
+  const muni = document.getElementById('filtro-municipio').value;
+  const sup = document.getElementById('filtro-supervisor').value;
+  const sem = document.getElementById('filtro-semaforo').value;
+  const isDir = state.user.perfil === 'DIRIGENTE';
+
+  const filtradas = state.escolas.filter(e => {
+    const matchBusca = !busca || e.nome.toLowerCase().includes(busca) || String(e.cie).includes(busca);
+    const matchMuni = !muni || e.municipio === muni;
+    const matchSup = !sup || e.supervisor === sup;
+    const matchSem = !isDir || !sem || e.semaforo === sem;
+    return matchBusca && matchMuni && matchSup && matchSem;
+  });
+
+  const container = document.getElementById('lista-escolas-cards');
+  if (!filtradas.length) {
+    container.innerHTML = `<div class="glass-card" style="padding:28px;text-align:center;color:#64748b;">Nenhuma unidade escolar encontrada.</div>`;
+    return;
+  }
+
+  container.innerHTML = filtradas.map(e => {
+    const semClass = e.semaforo === 'Regular' ? 'sem-regular' : (e.semaforo === 'Atenção' ? 'sem-atencao' : 'sem-critico');
+    return `
+      <div class="school-card">
+        <div>
+          <div class="school-title">${e.nome}</div>
+          <div class="school-meta">CIE: ${e.cie} • ${e.municipio || '—'} • Sup: ${e.supervisor || '—'}</div>
+        </div>
+
+        <div class="progress-box">
+          ${isDir ? `
+            <div class="progress-labels">
+              <span>${e.percentual}% preenchido</span>
+              <span>Validação: ${e.statusValidacao}</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" style="width: ${e.percentual}%"></div>
+            </div>
+          ` : `
+            <div><span class="badge-soft badge-blue">Status: ${e.statusValidacao}</span></div>
+          `}
+        </div>
+
+        <div class="school-right">
+          ${isDir ? `<span class="badge-soft ${semClass}">${e.semaforo}</span>` : ''}
+          <div class="school-actions-row">
+            <button class="btn-outline-blue" onclick="abrirEscola('${e.cie}')">Ver Detalhes</button>
+            ${isDir ? `<button class="btn-primary-glass" onclick="imprimirDireto('${e.cie}')">PDF</button>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 }
 
 function popularFiltrosDashboard() {
