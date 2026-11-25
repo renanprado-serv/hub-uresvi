@@ -10,18 +10,17 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Fundo luminoso estilo Liquid Glass -->
   <div class="ambient-bg"></div>
 
-  <!-- TELA DE LOGIN -->
+  <!-- LOGIN -->
   <section id="login-view" class="login-wrapper">
     <div class="glass-card login-card">
       <div class="brand-header-vertical">
-        <div class="sp-badge">SP</div>
+        <div class="app-icon-box">SVI</div>
         <div>
-          <p class="eyebrow">GOVERNO DO ESTADO DE SÃO PAULO • SEDUC</p>
-          <h1>URE São Vicente</h1>
-          <p class="subtitle">Sistema de Consolidação — Plano de Evidências Escolar</p>
+          <p class="eyebrow">SEDUC-SP • URE SÃO VICENTE</p>
+          <h1>Plano de Evidências</h1>
+          <p class="subtitle">Acesso por perfil institucional</p>
         </div>
       </div>
 
@@ -40,42 +39,30 @@
     </div>
   </section>
 
-  <!-- APLICAÇÃO PRINCIPAL -->
+  <!-- APLICAÇÃO -->
   <div id="app-view" class="app-shell hidden">
-    <!-- Cabeçalho Flutuante Liquid Glass -->
+    <!-- Header Pílula Branca (igual aos prints) -->
     <header class="glass-header">
       <div class="header-left">
-        <div class="sp-badge small">SP</div>
+        <div class="app-icon-box">📊</div>
         <div>
-          <span class="eyebrow">SECRETARIA DE ESTADO DA EDUCAÇÃO</span>
-          <h2 class="header-title">Unidade Regional de Ensino de São Vicente</h2>
+          <h2 class="header-title">Painel de Evidências</h2>
+          <p class="header-greeting">Olá, <span id="user-nome">USUÁRIO</span> (<span id="user-perfil">PERFIL</span>)</p>
         </div>
       </div>
 
       <div class="header-right">
         <select id="select-semestre" class="glass-pill-select" title="Selecionar Semestre"></select>
-        <button id="btn-consolidar" class="btn-accent-glass hidden">Consolidar Semestre</button>
-        <div class="user-pill">
-          <span id="user-nome">Usuário</span>
-          <small id="user-perfil">PERFIL</small>
-        </div>
         <button id="btn-logout" class="btn-ghost-glass">Sair</button>
+        <div class="ure-avatar" title="URE São Vicente">SVI</div>
       </div>
     </header>
 
-    <!-- VISÃO DASHBOARD (Dirigente, Supervisor e PEC) -->
-    <main id="dashboard-view" class="container hidden">
-      <div class="section-head">
-        <div>
-          <h1 id="dash-titulo">Painel de Acompanhamento</h1>
-          <p id="dash-subtitulo" class="subtitle">Consolidação semestral das unidades escolares</p>
-        </div>
-        <span id="badge-status-semestre" class="glass-pill-badge">Semestre Aberto</span>
-      </div>
-
-      <!-- KPIs (EXCLUSIVO DIRIGENTE) -->
+    <!-- DASHBOARD -->
+    <main id="dashboard-view" class="hidden">
+      <!-- KPIs Centralizados (EXCLUSIVO DIRIGENTE) -->
       <div id="kpi-grid" class="kpi-grid hidden">
-        <div class="glass-card kpi-card">
+        <div class="glass-card kpi-card kpi-blue">
           <span class="kpi-label">Total de Escolas</span>
           <strong id="kpi-total" class="kpi-value">0</strong>
         </div>
@@ -93,90 +80,73 @@
         </div>
       </div>
 
-      <!-- Filtros Flutuantes -->
-      <div class="glass-card filter-bar">
-        <input type="text" id="filtro-busca" class="glass-input" placeholder="Buscar por escola ou CIE..." />
-        <select id="filtro-municipio" class="glass-select">
+      <!-- Busca + Filtros + Botão Consolidar -->
+      <div class="search-action-row">
+        <input type="text" id="filtro-busca" class="search-pill-input" placeholder="Pesquisar unidade escolar ou CIE..." />
+        <select id="filtro-municipio" class="filter-select-pill">
           <option value="">Todos os Municípios</option>
         </select>
-        <select id="filtro-supervisor" class="glass-select">
+        <select id="filtro-supervisor" class="filter-select-pill">
           <option value="">Todos os Supervisores</option>
         </select>
-        <select id="filtro-semaforo" class="glass-select hidden">
+        <select id="filtro-semaforo" class="filter-select-pill hidden">
           <option value="">Todos os Semáforos</option>
           <option value="Regular">Regular</option>
           <option value="Atenção">Atenção</option>
           <option value="Crítico">Crítico</option>
         </select>
+        <button id="btn-consolidar" class="btn-outline-red hidden">Consolidar Semestre</button>
       </div>
 
-      <!-- Tabela de Escolas -->
-      <div class="glass-card table-wrapper">
-        <table class="glass-table">
-          <thead>
-            <tr>
-              <th>CIE</th>
-              <th>Unidade Escolar</th>
-              <th>Município</th>
-              <th>Supervisor</th>
-              <th>Validação</th>
-              <th class="col-dirigente hidden">Preench.</th>
-              <th class="col-dirigente hidden">Semáforo</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-escolas-body"></tbody>
-        </table>
-      </div>
+      <!-- Lista de Escolas em Cartões Horizontais -->
+      <div id="lista-escolas-cards" class="schools-list"></div>
     </main>
 
-    <!-- VISÃO FORMULÁRIO DA ESCOLA -->
-    <main id="escola-view" class="container hidden">
+    <!-- FORMULÁRIO DA ESCOLA -->
+    <main id="escola-view" class="hidden">
       <div class="glass-card escola-topbar">
         <div class="escola-info">
-          <button id="btn-voltar-dash" class="btn-ghost-glass hidden">← Voltar ao Painel</button>
-          <div>
-            <h1 id="form-escola-nome">Nome da Escola</h1>
-            <p id="form-escola-meta" class="subtitle">CIE: — | Município: —</p>
-          </div>
+          <button id="btn-voltar-dash" class="btn-ghost-glass hidden">← Voltar</button>
+          <h1 id="form-escola-nome">NOME DA ESCOLA</h1>
         </div>
         <div class="escola-actions">
-          <button id="btn-imprimir-escola" class="btn-ghost-glass hidden">Imprimir PDF</button>
+          <button id="btn-imprimir-escola" class="btn-outline-blue hidden">Lista PDF</button>
           <button id="btn-salvar-escola" class="btn-primary-glass">Salvar Alterações</button>
         </div>
+      </div>
+
+      <div class="escola-info-callout">
+        <small>Dados da Unidade Escolar:</small>
+        <strong id="form-escola-meta">CIE: — | Município: —</strong>
       </div>
 
       <div id="aviso-consolidado" class="alert-glass hidden">
         Este semestre foi consolidado pela Dirigente. Os campos estão em modo somente leitura.
       </div>
 
-      <!-- Abas por Área (Matriz RACI) -->
-      <nav class="tabs-pill-bar" id="form-tabs">
-        <button class="tab-btn active" data-tab="tab-eixo1">1. Identificação & RH</button>
-        <button class="tab-btn" data-tab="tab-pedagogico">2. Pedagógico & Avaliações</button>
-        <button class="tab-btn" data-tab="tab-clima">3. Gestão Democrática & Clima</button>
-        <button class="tab-btn" data-tab="tab-adm">4. Adm, Finanças & Merenda</button>
-        <button class="tab-btn" data-tab="tab-links">5. Evidências (Drive)</button>
-        <button class="tab-btn" data-tab="tab-regional">6. Gestão Regional (PEC/Sup.)</button>
-      </nav>
+      <!-- Abas Segmentadas Centralizadas -->
+      <div class="tabs-wrapper">
+        <nav class="tabs-pill-bar" id="form-tabs">
+          <button class="tab-btn active" data-tab="tab-eixo1">1. Identificação & RH</button>
+          <button class="tab-btn" data-tab="tab-pedagogico">2. Pedagógico</button>
+          <button class="tab-btn" data-tab="tab-clima">3. Gestão & Clima</button>
+          <button class="tab-btn" data-tab="tab-adm">4. Adm & Merenda</button>
+          <button class="tab-btn" data-tab="tab-links">5. Evidências (Drive)</button>
+          <button class="tab-btn" data-tab="tab-regional">6. Regional (PEC/Sup.)</button>
+        </nav>
+      </div>
 
-      <!-- Conteúdo das Abas (Renderizado dinamicamente pelo app.js) -->
       <div id="form-content-container" class="form-sections"></div>
     </main>
   </div>
 
-  <!-- Toast de Feedback -->
   <div id="toast" class="toast hidden"></div>
-
-  <!-- Loading Overlay -->
   <div id="loader" class="loader-overlay hidden">
     <div class="glass-card loader-box">
       <div class="spinner"></div>
       <span id="loader-text">Carregando...</span>
     </div>
   </div>
-
-  <!-- ÁREA OCULTA PARA IMPRESSÃO DO RELATÓRIO DIAGNÓSTICO (PDF DIRIGENTE) -->
   <section id="print-area" class="print-only"></section>
 
   <script src="app.js"></script>
