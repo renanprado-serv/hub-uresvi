@@ -392,7 +392,7 @@ function renderTabelaEscolas() {
       <div class="school-card">
         <div>
           <div class="school-title">${e.nome}</div>
-          <div class="school-meta">CIE: ${e.cie} • ${e.municipio \vert{}\vert{} '—'} • Sup: ${e.supervisor || '—'}</div>
+          <div class="school-meta">CIE: ${e.cie} • ${e.municipio || '—'} • Sup: ${e.supervisor || '—'}</div>
         </div>
 
         <div class="progress-box">
@@ -413,4 +413,304 @@ function renderTabelaEscolas() {
           ${isDir ? `<span class="badge-soft ${semClass}">${e.semaforo}</span>` : ''}
           <div class="school-actions-row">
             <button class="btn-outline-blue" onclick="abrirEscola('${e.cie}')">Ver Detalhes</button>
-            ${isDir ?
+            ${isDir ? `<button class="btn-primary-glass" onclick="imprimirDireto('${e.cie}')">PDF</button>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// =========================================================================
+// FORMULÁRIO DA ESCOLA (PREENCHIMENTO POR PERFIL RACI)
+// =========================================================================
+async function abrirEscola(cie) {
+  const res = await callApi({
+    action: 'getEscolaDados',
+    email: state.email,
+    senha: state.senha,
+    cie: cie,
+    semestre: state.semestreAtual
+  });
+
+  if (!res.ok) return showToast(res.error);
+
+  state.escolaAtual = res.dados;
+  document.getElementById('dashboard-view').classList.add('hidden');
+  document.getElementById('escola-view').classList.remove('hidden');
+
+  const isRegional = ['DIRIGENTE', 'SUPERVISOR', 'PEC'].includes(state.user.perfil);
+  document.getElementById('btn-voltar-dash').classList.toggle('hidden', !isRegional);
+  document.getElementById('btn-imprimir-escola').classList.toggle('hidden', state.user.perfil !== 'DIRIGENTE');
+
+  const esc = res.dados.escola;
+  document.getElementById('form-escola-nome').textContent = esc.Nome_Escola;
+  document.getElementById('form-escola-meta').textContent =
+    `CIE: ${esc.CIE} | Município: ${esc.Municipio} | Supervisor: ${esc.Nome_Supervisor || '—'} | PEC: ${esc.Nome_PEC || '—'}`;
+
+  const bloqueado = res.dados.semestreStatus === 'CONSOLIDADO' && state.user.perfil !== 'DIRIGENTE';
+  document.getElementById('aviso-consolidado').classList.toggle('hidden', !bloqueado);
+  document.getElementById('btn-salvar-escola').disabled = bloqueado;
+
+  renderFormularioCompleto(res.dados, bloqueado);
+}
+
+function renderFormularioCompleto(dados, bloqueado) {
+  const perfil = state.user.perfil;
+  const container = document.getElementById('form-content-container');
+  const tabs = ['tab-eixo1', 'tab-pedagogico', 'tab-clima', 'tab-adm', 'tab-links', 'tab-regional'];
+
+  container.innerHTML = tabs.map((t, idx) => `<div id="${t}" class="tab-panel ${idx === 0 ? 'active' : ''}"></div>`).join('');
+
+  // 1. Renderizar Blocos Numéricos
+  NUMERIC_SECTIONS.forEach(sec => {
+    const canEdit = !bloqueado && sec.perfisEdit.includes(perfil);
+    const html = `
+      <div class="glass-card form-block">
+        <h3>${sec.titulo}</h3>
+        <p class="block-raci">${sec.raci} ${canEdit ? '' : ' • (Somente leitura para seu perfil)'}</p>
+        <div class="grid-3">
+          ${sec.campos.map(c => `
+            <div class="input-group">
+              <label for="num_${c.id}">${c.label}</label>
+              <input type="${c.type}" id="num_${c.id}" data-num="${c.id}"
+                value="${dados.dadosNumericos[c.id] ?? ''}" ${canEdit ? '' : 'disabled'} />
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+    document.getElementById(sec.tab).insertAdjacentHTML('beforeend', html);
+  });
+
+  // 2. Renderizar os 15 Blocos do Checklist
+  CHECKLIST_BLOCKS.forEach(blk => {
+    const canEdit = !bloqueado && blk.perfisEdit.includes(perfil);
+    const html = `
+      <div class="glass-card form-block">
+        <h3>${blk.titulo}</h3>
+        <p class="block-raci">Perfis autorizados: ${blk.perfisEdit.join(', ')} ${canEdit ? '' : ' • (Somente leitura)'}</p>
+        ${blk.itens.map((label, i) => {
+          const key = `${blk.id}_${i + 1}`;
+          const val = dados.checklist[key] || { status: '', obs: '' };
+          return `
+            <div class="checklist-row">
+              <span>${label}</span>
+              <select data-chk-status="${key}" ${canEdit ? '' : 'disabled'}>
+                <option value="">Selecione</option>
+                <option value="Sim" ${val.status === 'Sim' ? 'selected' : ''}>Sim</option>
+                <option value="Não" ${val.status === 'Não' ? 'selected' : ''}>Não</option>
+              </select>
+              <input type="text" placeholder="Observações..." data-chk-obs="${key}"
+                value="${val.obs || ''}" ${canEdit ? '' : 'disabled'} />
+            </div>`;
+        }).join('')}
+      </div>`;
+    document.getElementById(blk.tab).insertAdjacentHTML('beforeend', html);
+  });
+
+  // 3. Aba de Links de Evidências (Drive)
+  const canEditLinks = !bloqueado && ['GOE', 'CGP', 'DIRETOR', 'DIRIGENTE'].includes(perfil);
+  document.getElementById('tab-links').innerHTML = `
+    <div class="glass-card form-block">
+      <h3>Links das Pastas de Evidências (Google Drive)</h3>
+      <p class="block-raci">Cole abaixo os links compartilhados com a URE São Vicente.</p>
+      <div class="form-stack">
+        ${LINKS_EIXOS.map(l => `
+          <div class="input-group">
+            <label>${l.label}</label>
+            <input type="url" placeholder="https://drive.google.com/..." data-link="${l.id}"
+              value="${dados.evidenciasLinks[l.id] || ''}" ${canEditLinks ? '' : 'disabled'} />
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+
+  // 4. Aba Gestão Regional (PEC / Supervisor / Dirigente)
+  const canEditReg = !bloqueado && ['PEC', 'SUPERVISOR', 'DIRIGENTE'].includes(perfil);
+  const canValidate = !bloqueado && ['SUPERVISOR', 'DIRIGENTE'].includes(perfil);
+  const reg = dados.gestaoRegional || {};
+  document.getElementById('tab-regional').innerHTML = `
+    <div class="glass-card form-block">
+      <h3>Diagnóstico Situacional, Plano de Ação e Validação</h3>
+      <p class="block-raci">Preenchimento: PEC e Supervisor | Validação Final: Supervisor</p>
+      <div class="form-stack">
+        <div class="input-group">
+          <label>Status de Validação da Escola</label>
+          <select id="reg_status_validacao" ${canValidate ? '' : 'disabled'}>
+            <option value="PENDENTE" ${dados.statusValidacao === 'PENDENTE' ? 'selected' : ''}>Pendente</option>
+            <option value="EM_ANALISE" ${dados.statusValidacao === 'EM_ANALISE' ? 'selected' : ''}>Em Análise</option>
+            <option value="COM_PENDENCIA" ${dados.statusValidacao === 'COM_PENDENCIA' ? 'selected' : ''}>Devolvido com Pendência</option>
+            <option value="VALIDADO" ${dados.statusValidacao === 'VALIDADO' ? 'selected' : ''}>Validado pelo Supervisor</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Diagnóstico Situacional da Unidade Escolar</label>
+          <textarea rows="5" id="reg_diagnostico" ${canEditReg ? '' : 'disabled'}>${reg.diagnostico || ''}</textarea>
+        </div>
+        <div class="input-group">
+          <label>Plano de Ação e Fragilidades Identificadas</label>
+          <textarea rows="5" id="reg_plano_acao" ${canEditReg ? '' : 'disabled'}>${reg.planoAcao || ''}</textarea>
+        </div>
+        <div class="input-group">
+          <label>Encaminhamentos / Parecer da Supervisão</label>
+          <textarea rows="4" id="reg_parecer" ${canValidate ? '' : 'disabled'}>${reg.parecer || ''}</textarea>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function salvarDadosEscola() {
+  const dadosNumericos = {};
+  document.querySelectorAll('[data-num]:not(:disabled)').forEach(el => {
+    dadosNumericos[el.dataset.num] = el.value;
+  });
+
+  const checklist = {};
+  document.querySelectorAll('[data-chk-status]:not(:disabled)').forEach(el => {
+    const key = el.dataset.chkStatus;
+    const obsEl = document.querySelector(`[data-chk-obs="${key}"]`);
+    checklist[key] = { status: el.value, obs: obsEl ? obsEl.value : '' };
+  });
+
+  const evidenciasLinks = {};
+  document.querySelectorAll('[data-link]:not(:disabled)').forEach(el => {
+    evidenciasLinks[el.dataset.link] = el.value;
+  });
+
+  const gestaoRegional = {};
+  const diag = document.getElementById('reg_diagnostico');
+  const plano = document.getElementById('reg_plano_acao');
+  const parecer = document.getElementById('reg_parecer');
+  if (diag && !diag.disabled) gestaoRegional.diagnostico = diag.value;
+  if (plano && !plano.disabled) gestaoRegional.planoAcao = plano.value;
+  if (parecer && !parecer.disabled) gestaoRegional.parecer = parecer.value;
+
+  const statusValEl = document.getElementById('reg_status_validacao');
+  const statusValidacao = (statusValEl && !statusValEl.disabled) ? statusValEl.value : null;
+
+  const res = await callApi({
+    action: 'salvarEscolaDados',
+    email: state.email,
+    senha: state.senha,
+    cie: state.escolaAtual.escola.CIE,
+    semestre: state.semestreAtual,
+    dados: { dadosNumericos, checklist, evidenciasLinks, gestaoRegional, statusValidacao }
+  });
+
+  if (res.ok) {
+    showToast(res.mensagem);
+  } else {
+    showToast(res.error || 'Erro ao salvar.');
+  }
+}
+
+async function consolidarSemestreAtual() {
+  if (!confirm(`Deseja realmente CONSOLIDAR e BLOQUEAR o semestre ${state.semestreAtual}?`)) return;
+  const res = await callApi({
+    action: 'consolidarSemestre',
+    email: state.email,
+    senha: state.senha,
+    semestre: state.semestreAtual
+  });
+  if (res.ok) {
+    showToast(res.mensagem);
+    carregarDashboard();
+  } else {
+    showToast(res.error);
+  }
+}
+
+// =========================================================================
+// RELATÓRIO DIAGNÓSTICO EM PDF (EXCLUSIVO DIRIGENTE)
+// =========================================================================
+async function imprimirDireto(cie) {
+  const res = await callApi({
+    action: 'getEscolaDados',
+    email: state.email,
+    senha: state.senha,
+    cie: cie,
+    semestre: state.semestreAtual
+  });
+  if (res.ok) imprimirRelatorioPDF(res.dados);
+}
+
+function imprimirRelatorioPDF(dados) {
+  const esc = dados.escola;
+  const num = dados.dadosNumericos || {};
+  const reg = dados.gestaoRegional || {};
+  const links = dados.evidenciasLinks || {};
+
+  const printArea = document.getElementById('print-area');
+  printArea.innerHTML = `
+    <div class="print-header">
+      <p>GOVERNO DO ESTADO DE SÃO PAULO • SECRETARIA DE ESTADO DA EDUCAÇÃO</p>
+      <h1>UNIDADE REGIONAL DE ENSINO DE SÃO VICENTE</h1>
+      <p><strong>Relatório Diagnóstico do Plano de Evidências Escolar — Semestre ${dados.semestre}</strong></p>
+    </div>
+
+    <div class="print-section">
+      <h2>1. Identificação e Situação Geral</h2>
+      <table class="print-table">
+        <tr><th>Escola</th><td>${esc.Nome_Escola}</td><th>CIE</th><td>${esc.CIE}</td></tr>
+        <tr><th>Município</th><td>${esc.Municipio}</td><th>Validação</th><td>${dados.statusValidacao}</td></tr>
+        <tr><th>Supervisor</th><td>${esc.Nome_Supervisor || '—'}</td><th>PEC</th><td>${esc.Nome_PEC || '—'}</td></tr>
+        <tr><th>Preenchimento Checklist</th><td><strong>${dados.percentual ?? 0}%</strong></td><th>Semáforo Situacional</th><td><strong>${dados.semaforo || 'Crítico'}</strong></td></tr>
+      </table>
+    </div>
+
+    <div class="print-section">
+      <h2>2. Indicadores Quantitativos (Atendimento, BI Educação e Prova Paulista)</h2>
+      <table class="print-table">
+        <tr>
+          <th>Total Estudantes</th><td>${num.total_estudantes || '—'}</td>
+          <th>Turmas</th><td>${num.qtd_turmas || '—'}</td>
+          <th>Ed. Especial</th><td>${num.alunos_ed_especial || '—'}</td>
+        </tr>
+        <tr>
+          <th>Frequência Geral BI</th><td>${num.bi_freq_geral || '—'}%</td>
+          <th>Aprovação</th><td>${num.bi_aprovacao || '—'}%</td>
+          <th>Abandono</th><td>${num.bi_abandono || '—'}%</td>
+        </tr>
+        <tr>
+          <th>Prova Paulista Partic.</th><td>${num.pp_participacao || '—'}%</td>
+          <th>LP Abaixo Básico</th><td>${num.pp_lp_abaixo || '—'}%</td>
+          <th>Mat Abaixo Básico</th><td>${num.pp_mat_abaixo || '—'}%</td>
+        </tr>
+        <tr>
+          <th>Infrequentes (Busca Ativa)</th><td>${num.ba_infrequentes || '—'}</td>
+          <th>Reinseridos</th><td>${num.ba_reinseridos || '—'}</td>
+          <th>Total Ocorrências</th><td>${num.oc_total || '—'}</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="print-section">
+      <h2>3. Diagnóstico Situacional e Plano de Ação</h2>
+      <p><strong>Diagnóstico:</strong><br/>${(reg.diagnostico || 'Não informado.').replace(/\n/g, '<br/>')}</p><br/>
+      <p><strong>Plano de Ação:</strong><br/>${(reg.planoAcao || 'Não informado.').replace(/\n/g, '<br/>')}</p><br/>
+      <p><strong>Parecer da Supervisão:</strong><br/>${(reg.parecer || 'Não informado.').replace(/\n/g, '<br/>')}</p>
+    </div>
+
+    <div class="print-section">
+      <h2>4. Links das Pastas de Evidências</h2>
+      <table class="print-table">
+        ${LINKS_EIXOS.map(l => `<tr><th>${l.label}</th><td>${links[l.id] || 'Não informado'}</td></tr>`).join('')}
+      </table>
+    </div>
+  `;
+
+  window.print();
+}
+
+// Utilitários de UI
+function showLoader(txt) {
+  document.getElementById('loader-text').textContent = txt || 'Carregando...';
+  document.getElementById('loader').classList.remove('hidden');
+}
+function hideLoader() { document.getElementById('loader').classList.add('hidden'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3500);
+}
